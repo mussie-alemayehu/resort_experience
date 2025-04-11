@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:resort_experience/features/auth/presentation/screens/login_screen.dart';
+import 'package:resort_experience/features/auth/presentation/screens/register_screen.dart';
 import 'package:resort_experience/features/dashboard/presentation/screens/dashboard.dart';
 import 'package:resort_experience/features/services/presentation/screens/services_screen.dart';
 import 'package:resort_experience/features/preferences/presentation/screens/add_preferences_screen.dart';
@@ -13,6 +15,16 @@ final GoRouter appRouter = GoRouter(
   // navigatorKey: _rootNavigatorKey, // Optional
   initialLocation: AppRoutes.dashboard, // Start at the dashboard
   routes: [
+    GoRoute(
+      path: AppRoutes.login,
+      name: AppRoutes.login,
+      builder: (context, state) => const LoginScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.register,
+      name: AppRoutes.register,
+      builder: (context, state) => const RegisterScreen(),
+    ),
     GoRoute(
       path: AppRoutes.dashboard,
       name: AppRoutes.dashboard,

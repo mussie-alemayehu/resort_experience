@@ -5,6 +5,8 @@ class AppRoutes {
   static const String addPreference = '/preferences/add';
   static const String suggestionActivities = '/suggestion-activities';
   static const String suggestionPlans = '/suggestion-plans';
+  static const String login = '/login';
+  static const String register = '/register';
 
   // Example with path parameter (if needed later)
   // static const String serviceDetail = '/services/:id';
