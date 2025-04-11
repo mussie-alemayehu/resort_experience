@@ -36,7 +36,7 @@ class DashboardScreen extends StatelessWidget {
             ).animate().fade(delay: 500.ms).slideX(),
             const SizedBox(height: 15),
             ElevatedButton(
-              onPressed: () => context.push(AppRoutes.suggestions),
+              onPressed: () => context.push(AppRoutes.suggestionPlans),
               child: const Text('View Suggestions'),
             ).animate().fade(delay: 600.ms).slideX(begin: 0.5),
             const SizedBox(height: 15),

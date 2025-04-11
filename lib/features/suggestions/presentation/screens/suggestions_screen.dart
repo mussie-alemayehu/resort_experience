@@ -1,101 +1,146 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../../models/suggestion.dart';
-import '../../providers/suggestions_provider.dart';
-import '../widgets/suggestion_card_widget.dart';
+import 'package:resort_experience/config/theme/app_colors.dart'; // Use your theme colors
+import '../../providers/suggestion_plans_provider.dart';
+import '../widgets/suggestion_plan_card_widget.dart'; // Import the new card
 
 class SuggestionsScreen extends ConsumerWidget {
   const SuggestionsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Watch the provider to get the suggestion data
-    // In a real app, handle loading and error states here
-    final asyncSuggestions = ref.watch(suggestionsProvider);
+    final suggestionPlans = ref.watch(suggestionPlansProvider);
     final theme = Theme.of(context);
-
-    // Group suggestions by time of day
-    final morningSuggestions = asyncSuggestions
-        .where((s) => s.timeOfDay == SuggestionTimeOfDay.morning)
-        .toList();
-    final afternoonSuggestions = asyncSuggestions
-        .where((s) => s.timeOfDay == SuggestionTimeOfDay.afternoon)
-        .toList();
-    final eveningSuggestions = asyncSuggestions
-        .where((s) => s.timeOfDay == SuggestionTimeOfDay.evening)
-        .toList();
+    final textTheme = theme.textTheme;
 
     return Scaffold(
-      // Use a slightly darker background from the theme for immersion if desired
-      // backgroundColor: theme.brightness == Brightness.dark ? AppColors.backgroundDark : AppColors.backgroundLight,
       appBar: AppBar(
-        title: const Text('Your Kuriftu Day'),
-        // Make AppBar slightly transparent or blend with background
-        backgroundColor: theme.scaffoldBackgroundColor.withValues(alpha: 0.85),
-        elevation: 0, // Remove shadow for seamless look
+        title: const Text('Choose Your Experience')
+            .animate()
+            .fadeIn(delay: 300.ms, duration: 500.ms),
         centerTitle: true,
+        backgroundColor: Colors.transparent, // Blend with background
+        elevation: 0,
       ),
+      // Extend body behind AppBar for seamless background
+      // extendBodyBehindAppBar: true,
       body: CustomScrollView(
-        // Use CustomScrollView for more flexibility with slivers
         slivers: [
-          // --- Morning Section ---
-          _buildSectionHeader(context, "☀️ Morning Adventures"),
-          _buildSuggestionList(morningSuggestions, 0), // Start delay index 0
+          // --- Header/Intro Text ---
+          SliverPadding(
+            padding: const EdgeInsets.only(
+                top: 10.0, left: 20.0, right: 20.0, bottom: 10.0),
+            sliver: SliverToBoxAdapter(
+              child: Text(
+                "Select a curated plan or customize your perfect day at Kuriftu.",
+                textAlign: TextAlign.center,
+                style: textTheme.titleMedium?.copyWith(
+                  color: theme.colorScheme.onSurface.withOpacity(0.7),
+                ),
+              )
+                  .animate()
+                  .fadeIn(delay: 500.ms, duration: 500.ms)
+                  .moveY(begin: 10, curve: Curves.easeOut),
+            ),
+          ),
 
-          // --- Afternoon Section ---
-          _buildSectionHeader(context, " M Afternoon Relaxation"),
-          _buildSuggestionList(afternoonSuggestions,
-              morningSuggestions.length), // Continue delay
+          // --- List of Suggestion Plans ---
+          SliverPadding(
+            padding: const EdgeInsets.only(
+                top: 10.0, bottom: 5.0), // Add padding around the list
+            sliver: SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  final plan = suggestionPlans[index];
+                  final delay = Duration(
+                      milliseconds:
+                          150 * index + 600); // Stagger animation after header
+                  return SuggestionPlanCard(
+                    plan: plan,
+                    animationDelay: delay,
+                  );
+                },
+                childCount: suggestionPlans.length,
+              ),
+            ),
+          ),
 
-          // --- Evening Section ---
-          _buildSectionHeader(context, "🌙 Evening Experiences"),
-          _buildSuggestionList(eveningSuggestions,
-              morningSuggestions.length + afternoonSuggestions.length),
+          // --- Action Buttons ---
+          SliverPadding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 25.0),
+            sliver: SliverToBoxAdapter(
+                child: Column(
+              children: [
+                _buildActionButton(
+                  context: context,
+                  icon: Icons.add_circle_outline_rounded,
+                  label: "Create Your Own Suggestion",
+                  color: AppColors.accent, // Or your theme's accent
+                  onTap: () {
+                    // TODO: Navigate to a custom suggestion creation screen
+                    print("Navigate to Create Suggestion");
+                  },
+                  delay: Duration(
+                      milliseconds: 150 * suggestionPlans.length +
+                          700), // Animate after list
+                ),
+                const SizedBox(height: 15),
+                _buildActionButton(
+                  context: context,
+                  icon: Icons.tune_rounded,
+                  label: "Update Your Preferences",
+                  color: AppColors.secondary, // Or your theme's secondary
+                  onTap: () {
+                    // TODO: Navigate to user preferences screen
+                    print("Navigate to Update Preferences");
+                  },
+                  delay: Duration(
+                      milliseconds: 150 * suggestionPlans.length +
+                          800), // Animate after first button
+                ),
+              ],
+            )),
+          ),
 
-          // Add some padding at the bottom
-          const SliverToBoxAdapter(child: SizedBox(height: 30)),
+          // Bottom padding
+          const SliverToBoxAdapter(child: SizedBox(height: 20)),
         ],
       ),
     );
   }
 
-  // Helper widget for section headers
-  Widget _buildSectionHeader(BuildContext context, String title) {
+  // Helper for Action Buttons
+  Widget _buildActionButton({
+    required BuildContext context,
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+    required Duration delay,
+  }) {
     final theme = Theme.of(context);
-    return SliverPadding(
-      padding: const EdgeInsets.only(left: 20.0, top: 24.0, bottom: 8.0),
-      sliver: SliverToBoxAdapter(
-        child: Text(
-          title,
-          style: theme.textTheme.headlineMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: theme.colorScheme.primary, // Use primary color for headers
-          ),
-        )
-            .animate()
-            .fadeIn(duration: 400.ms)
-            .slideX(begin: -0.1, curve: Curves.easeOut),
+    return ElevatedButton.icon(
+      icon: Icon(icon, size: 20),
+      label: Text(label),
+      onPressed: onTap,
+      style: ElevatedButton.styleFrom(
+        foregroundColor: Colors.white, // Text/Icon color
+        backgroundColor: color.withOpacity(0.9),
+        minimumSize:
+            const Size(double.infinity, 50), // Full width, fixed height
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        textStyle:
+            theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
+        elevation: 3,
+        shadowColor: color.withOpacity(0.3),
       ),
-    );
-  }
-
-  // Helper widget to build the list of suggestion cards for a section
-  Widget _buildSuggestionList(
-      List<Suggestion> suggestions, int delayStartIndex) {
-    return SliverList(
-      delegate: SliverChildBuilderDelegate(
-        (context, index) {
-          final suggestion = suggestions[index];
-          // Calculate staggered delay for each card
-          final delay = Duration(milliseconds: 150 * (delayStartIndex + index));
-          return SuggestionCard(
-            suggestion: suggestion,
-            animationDelay: delay,
-          );
-        },
-        childCount: suggestions.length,
-      ),
-    );
+    )
+        .animate(delay: delay)
+        .fadeIn(duration: 500.ms)
+        .moveY(begin: 20, curve: Curves.easeOut);
   }
 }

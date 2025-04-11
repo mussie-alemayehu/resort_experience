@@ -4,6 +4,7 @@ import 'package:resort_experience/features/dashboard/presentation/screens/dashbo
 import 'package:resort_experience/features/services/presentation/screens/services_screen.dart';
 import 'package:resort_experience/features/preferences/presentation/screens/add_preferences_screen.dart';
 import 'package:resort_experience/features/preferences/presentation/screens/preferences_intro_screen.dart';
+import 'package:resort_experience/features/suggestions/presentation/screens/suggestion_activities_screen.dart';
 import 'package:resort_experience/features/suggestions/presentation/screens/suggestions_screen.dart';
 
 import 'app_routes.dart'; // Import your routes
@@ -44,9 +45,14 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const AddPreferenceScreen(),
     ),
     GoRoute(
-      path: AppRoutes.suggestions,
-      name: AppRoutes.suggestions,
+      path: AppRoutes.suggestionPlans,
+      name: AppRoutes.suggestionPlans,
       builder: (context, state) => const SuggestionsScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.suggestionActivities,
+      name: AppRoutes.suggestionActivities,
+      builder: (context, state) => const SuggestionActivitiesScreen(),
     ),
     // Example for nested routes or routes with parameters later
     // GoRoute(
