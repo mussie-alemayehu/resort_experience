@@ -6,11 +6,8 @@ import '../../models/suggestion.dart';
 import '../../providers/suggestions_provider.dart';
 import '../widgets/suggestion_card_widget.dart';
 
-// Inside lib/features/suggestions/presentation/screens/suggestion_activities_screen.dart
 class SuggestionActivitiesScreen extends ConsumerWidget {
-  // <--- Renamed
-  // Add a constructor if you need to receive data (e.g., plan title)
-  final String planTitle; // Example: Pass the title
+  final String planTitle;
 
   const SuggestionActivitiesScreen({
     super.key,
@@ -19,9 +16,7 @@ class SuggestionActivitiesScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // ... rest of your existing build method ...
-    final asyncSuggestions =
-        ref.watch(suggestionsProvider); // This stays the same for now
+    final asyncSuggestions = ref.watch(suggestionsProvider);
     final theme = Theme.of(context);
 
     // Group suggestions by time of day

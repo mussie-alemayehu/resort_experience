@@ -36,7 +36,7 @@ class SuggestionsScreen extends ConsumerWidget {
                 "Select a curated plan or customize your perfect day at Kuriftu.",
                 textAlign: TextAlign.center,
                 style: textTheme.titleMedium?.copyWith(
-                  color: theme.colorScheme.onSurface.withOpacity(0.7),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
               )
                   .animate()
@@ -127,7 +127,7 @@ class SuggestionsScreen extends ConsumerWidget {
       onPressed: onTap,
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.white, // Text/Icon color
-        backgroundColor: color.withOpacity(0.9),
+        backgroundColor: color.withValues(alpha: 0.9),
         minimumSize:
             const Size(double.infinity, 50), // Full width, fixed height
         shape: RoundedRectangleBorder(
@@ -136,7 +136,7 @@ class SuggestionsScreen extends ConsumerWidget {
         textStyle:
             theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
         elevation: 3,
-        shadowColor: color.withOpacity(0.3),
+        shadowColor: color.withValues(alpha: 0.3),
       ),
     )
         .animate(delay: delay)

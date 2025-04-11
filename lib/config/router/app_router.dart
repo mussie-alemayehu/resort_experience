@@ -9,10 +9,6 @@ import 'package:resort_experience/features/suggestions/presentation/screens/sugg
 
 import 'app_routes.dart'; // Import your routes
 
-// Optional: Define a key for the root navigator
-// Useful for showing dialogs/snackbars globally if needed
-// final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
-
 final GoRouter appRouter = GoRouter(
   // navigatorKey: _rootNavigatorKey, // Optional
   initialLocation: AppRoutes.dashboard, // Start at the dashboard
@@ -37,7 +33,7 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.preferencesIntro,
       name: AppRoutes.preferencesIntro,
-      builder: (context, state) => const PreferencesIntroScreen(),
+      builder: (context, state) => const PreferencesScreen(),
     ),
     GoRoute(
       path: AppRoutes.addPreference,
