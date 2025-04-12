@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // If needed for interactions later
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart'; // For date formatting
-import 'package:resort_experience/config/theme/app_colors.dart';
-import 'package:resort_experience/config/theme/app_typography.dart';
+import 'package:resort_experience/core/config/theme/app_colors.dart';
+import 'package:resort_experience/core/config/theme/app_typography.dart';
 
 // Enums for clarity
 enum PlanTimePreference { earlyRiser, balanced, nightOwl }

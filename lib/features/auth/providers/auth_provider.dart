@@ -3,28 +3,27 @@ import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
+import 'package:resort_experience/core/endpoints.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'auth_state.dart'; // Import the enum
+import 'auth_state.dart';
 
 // --- Configuration ---
-const String _baseUrl = 'https://your-api.com/api';
-const String _prefsKeyAuthToken = 'authToken';
+const String _baseUrl = Endpoints.baseUrl;
 const String _prefsKeyLoggedIn = 'isLoggedIn';
 
 // --- HTTP Helper ---
 // (Simplified for auth - add token handling here if logout needs it)
 Future<Map<String, dynamic>> _postRequest(
     String endpoint, Map<String, dynamic> body) async {
-  final url = Uri.parse('$_baseUrl/$endpoint');
+  final url = Uri.parse('$_baseUrl$endpoint');
   try {
     final response = await http
         .post(
           url,
-          headers: {'Content-Type': 'application/json'},
-          body: json.encode(body),
+          body: body,
         )
-        .timeout(const Duration(seconds: 15)); // Add a timeout
+        .timeout(const Duration(seconds: 15));
 
     final responseBody = json.decode(response.body);
 
@@ -38,8 +37,8 @@ Future<Map<String, dynamic>> _postRequest(
       }
     } else {
       // Try to extract error message from API response
-      String errorMessage = responseBody['message'] ??
-          responseBody['error'] ??
+      String errorMessage = responseBody['message']?.toString() ??
+          responseBody['error']?.toString() ??
           'Unknown error occurred';
       throw Exception('API Error (${response.statusCode}): $errorMessage');
     }
@@ -54,12 +53,25 @@ Future<Map<String, dynamic>> _postRequest(
 
 // --- Auth Notifier ---
 class AuthNotifier extends StateNotifier<AuthState> {
-  AuthNotifier(this._ref) : super(AuthState.unknown) {
+  AuthNotifier(this._ref, this._token) : super(AuthState.unknown) {
     _initialize(); // Check auth status on creation
   }
 
+  String? _token;
   final Ref _ref;
   SharedPreferences? _prefs; // Cache instance
+
+  String? get token {
+    return _token;
+  }
+
+  void setToken(String? token) {
+    _token = token;
+  }
+
+  Ref get ref {
+    return _ref;
+  }
 
   Future<void> _initialize() async {
     _prefs = await SharedPreferences.getInstance();
@@ -73,22 +85,26 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = AuthState.authenticating;
     try {
       final response = await _postRequest(
-        'auth/login', // <-- REPLACE with your login endpoint
+        Endpoints.loginUser, // <-- REPLACE with your login endpoint
         {'email': email, 'password': password},
       );
 
+      print(response);
+
       final token =
-          response['token'] as String?; // Adjust key based on your API
+          response['access_token'] as String?; // Adjust key based on your API
       if (token != null && token.isNotEmpty) {
-        await _saveAuthData(token);
         state = AuthState.authenticated;
       } else {
-        throw Exception(
-            response['message'] ?? 'Login failed: Token not received.');
+        throw Exception(response['message']?.toString() ??
+            'Login failed: Token not received.');
       }
     } catch (e) {
       state = AuthState.error;
       // IMPORTANT: Rethrow so UI can catch it and show specific message
+
+      print(e);
+
       rethrow;
     }
   }
@@ -113,20 +129,27 @@ class AuthNotifier extends StateNotifier<AuthState> {
         if (phoneNumber != null) 'phoneNumber': phoneNumber,
       };
 
-      final response = await _postRequest(
-        'auth/register', // <-- REPLACE with your register endpoint
+      final reg = await _postRequest(
+        Endpoints.registerUser, // <-- REPLACE with your register endpoint
         requestBody,
+      );
+
+      print(reg);
+
+      final response = await _postRequest(
+        Endpoints.loginUser,
+        {'email': email, 'password': password},
       );
 
       // Assumption: Successful registration also returns a token and logs the user in.
       // Adjust if your API requires separate login after registration.
-      final token = response['token'] as String?; // Adjust key
+      final token = response['access_token'] as String?; // Adjust key
       if (token != null && token.isNotEmpty) {
-        await _saveAuthData(token);
+        setToken(token);
         state = AuthState.authenticated;
       } else {
-        throw Exception(
-            response['message'] ?? 'Registration failed: Token not received.');
+        throw Exception(response['message']?.toString() ??
+            'Registration failed: Token not received.');
       }
     } catch (e) {
       state = AuthState.error;
@@ -143,33 +166,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
     //   print("Logout API call failed (non-critical): $e");
     // }
 
-    await _clearAuthData();
     state = AuthState.unauthenticated;
-    print("Logout Successful, State: $state"); // For debugging
-  }
-
-  // --- Internal Helpers ---
-  Future<void> _saveAuthData(String token) async {
-    _prefs ??= await SharedPreferences.getInstance();
-    await _prefs?.setString(_prefsKeyAuthToken, token);
-    await _prefs?.setBool(_prefsKeyLoggedIn, true);
-  }
-
-  Future<void> _clearAuthData() async {
-    _prefs ??= await SharedPreferences.getInstance();
-    await _prefs?.remove(_prefsKeyAuthToken);
-    await _prefs
-        ?.remove(_prefsKeyLoggedIn); // Ensure logged in status is also cleared
-  }
-
-  // Optional: Method to get the current token if needed elsewhere
-  Future<String?> getToken() async {
-    _prefs ??= await SharedPreferences.getInstance();
-    return _prefs?.getString(_prefsKeyAuthToken);
   }
 }
 
 // --- Riverpod Provider Definition ---
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
-  return AuthNotifier(ref);
+  return AuthNotifier(ref, null);
 });

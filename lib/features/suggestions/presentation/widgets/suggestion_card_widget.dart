@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:resort_experience/config/theme/app_colors.dart'; // Your colors
+import 'package:resort_experience/core/config/theme/app_colors.dart'; // Your colors
 import 'package:resort_experience/core/icon_getter.dart';
 
 import '../../models/suggestion.dart'; // Your Suggestion model

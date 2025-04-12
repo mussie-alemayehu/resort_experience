@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:resort_experience/config/theme/app_colors.dart'; // Your theme
+import 'package:resort_experience/core/config/theme/app_colors.dart'; // Your theme
 import 'package:resort_experience/features/preferences/models/user_preferences.dart';
 import 'package:resort_experience/features/preferences/presentation/widgets/selectable_chip.dart';
 import 'package:resort_experience/features/preferences/presentation/widgets/step_title.dart';

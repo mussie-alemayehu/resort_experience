@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-import 'package:resort_experience/config/theme/app_colors.dart';
+import 'package:resort_experience/core/config/theme/app_colors.dart';
 import 'package:resort_experience/core/icon_getter.dart';
 
 import '../../models/suggestion.dart';

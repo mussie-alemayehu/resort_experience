@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
-import 'package:resort_experience/config/router/app_routes.dart';
-import 'package:resort_experience/config/theme/app_colors.dart'; // Use your theme colors
+import 'package:resort_experience/core/config/router/app_routes.dart';
+import 'package:resort_experience/core/config/theme/app_colors.dart'; // Use your theme colors
 import '../../providers/suggestion_plans_provider.dart';
 import '../widgets/suggestion_plan_card_widget.dart'; // Import the new card
 

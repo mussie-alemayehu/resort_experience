@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'config/router/app_router.dart';
-import 'config/theme/app_theme.dart';
+import 'core/config/router/app_router.dart';
+import 'core/config/theme/app_theme.dart';
 
 class KuriftuApp extends ConsumerWidget {
   const KuriftuApp({super.key});

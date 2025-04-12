@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:resort_experience/config/theme/app_colors.dart';
+import 'package:resort_experience/core/config/theme/app_colors.dart';
 import 'package:resort_experience/features/suggestions/models/suggestion_plan.dart';
 
 // 1. Define the State Notifier

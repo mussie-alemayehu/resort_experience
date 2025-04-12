@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:resort_experience/config/theme/app_colors.dart'; // Your theme colors
+import 'package:resort_experience/core/config/theme/app_colors.dart'; // Your theme colors
 import '../models/suggestion.dart'; // Import the updated Suggestion model
 
 // Provider to supply the list of suggestions for a plan

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:resort_experience/config/theme/app_colors.dart'; // Use your theme
+import 'package:resort_experience/core/config/theme/app_colors.dart'; // Use your theme
 
 class SelectableChip extends StatelessWidget {
   final String label;

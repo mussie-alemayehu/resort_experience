@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:resort_experience/config/theme/app_colors.dart';
+import 'package:resort_experience/core/config/theme/app_colors.dart';
 import 'package:resort_experience/features/auth/providers/auth_provider.dart';
 
-import '../../../../config/router/app_routes.dart';
+import '../../../../core/config/router/app_routes.dart';
 // Import your LoginScreen for navigation
 // import 'login_screen.dart'; // Assuming it's in the same directory
 
@@ -56,8 +56,6 @@ class RegisterScreen extends ConsumerWidget {
 
     // Simple Ethiopia phone number regex (adjust if needed)
     final phoneRegex = RegExp(r'^(?:\+?251|0)?9\d{8}$');
-    // Basic password strength regex (example: min 8 chars, 1 letter, 1 number)
-    final passwordRegex = RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$');
 
     void submitRegistration() async {
       ref.read(enableAnimationsProvider.notifier).state = false;
@@ -220,10 +218,10 @@ class RegisterScreen extends ConsumerWidget {
                   obscureText: !isPasswordVisible,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please create a password';
+                      return 'Please enter your password';
                     }
-                    if (!passwordRegex.hasMatch(value)) {
-                      return 'Password must be 8+ chars with letters and numbers';
+                    if (value.length < 8) {
+                      return 'Password must be at least 8 characters';
                     }
                     return null;
                   },

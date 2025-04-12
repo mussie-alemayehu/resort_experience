@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart'; // Import animate
 import 'package:go_router/go_router.dart';
-import 'package:resort_experience/config/router/app_routes.dart'; // Routes
+import 'package:resort_experience/core/config/router/app_routes.dart'; // Routes
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
