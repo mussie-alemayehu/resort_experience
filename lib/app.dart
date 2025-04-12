@@ -12,6 +12,8 @@ class KuriftuApp extends ConsumerWidget {
     // e.g., theme mode provider
     // final themeMode = ref.watch(themeModeProvider);
 
+    final appRouter = ref.read(goRouterProvider);
+
     return MaterialApp.router(
       title: 'Kuriftu Experience',
       debugShowCheckedModeBanner: false, // Disable debug banner

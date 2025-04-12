@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:resort_experience/config/router/app_routes.dart';
 import 'package:resort_experience/config/theme/app_colors.dart';
+import 'package:resort_experience/features/auth/providers/auth_provider.dart';
 
 class LoginScreen extends ConsumerWidget {
   LoginScreen({super.key});
@@ -11,6 +12,8 @@ class LoginScreen extends ConsumerWidget {
   final loginLoadingProvider = StateProvider<bool>((ref) => false);
   final loginPasswordVisibleProvider = StateProvider<bool>((ref) => false);
   final enableAnimationsProvider = StateProvider<bool>((ref) => true);
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
 
   Widget animatedWidget(Widget child, Duration delay, Duration duration,
       {required bool enableAnimations,
@@ -34,8 +37,6 @@ class LoginScreen extends ConsumerWidget {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
     final formKey = GlobalKey<FormState>(); // Key for form validation
-    final emailController = TextEditingController();
-    final passwordController = TextEditingController();
     final isLoading = ref.watch(loginLoadingProvider);
     final isPasswordVisible = ref.watch(loginPasswordVisibleProvider);
     final enableAnimations = ref.watch(enableAnimationsProvider);
@@ -46,25 +47,25 @@ class LoginScreen extends ConsumerWidget {
     // ConsumerStatefulWidget or managing controllers via providers.
     // For this basic example, they'll be recreated on rebuilds.
 
-    void submitLogin() {
+    void submitLogin() async {
+      ref.read(enableAnimationsProvider.notifier).state = false;
       if (formKey.currentState?.validate() ?? false) {
         ref.read(loginLoadingProvider.notifier).state = true; // Start loading
 
-        // --- TODO: Implement actual login logic here ---
-        // Example: Call your authentication service/provider
-        // await ref.read(authProvider.notifier).login(email, password);
-
-        // Simulate network call
-        Future.delayed(const Duration(seconds: 2), () {
-          ref.read(loginLoadingProvider.notifier).state = false; // Stop loading
-          // TODO: Navigate on success or show error message
-          // Example: Navigator.pushReplacement(...) or showSnackBar
+        try {
+          await ref.read(authProvider.notifier).login(
+                emailController.text,
+                passwordController.text,
+              );
+          context.go(AppRoutes.dashboard);
+          // No navigation needed here - GoRouter redirect will handle it upon state change
+        } catch (e) {
+          // Hide loading indicator
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Login Successful!')),
+            SnackBar(content: Text('Login Failed: ${e.toString()}')),
           );
-        });
-
-        context.go(AppRoutes.dashboard);
+        }
+        ref.read(loginLoadingProvider.notifier).state = false;
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Login failed.')),

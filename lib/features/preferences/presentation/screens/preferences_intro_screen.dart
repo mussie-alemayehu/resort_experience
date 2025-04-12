@@ -103,10 +103,6 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
 
     final preferencesJson = _preferences.toJson();
 
-    print("--- Submitting Preferences ---");
-    print(preferencesJson);
-    print("-----------------------------");
-
     // --- TODO: Implement API Call ---
     // Show loading indicator
     // try {

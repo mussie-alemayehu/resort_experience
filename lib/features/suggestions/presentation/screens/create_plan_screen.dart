@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // If needed for interactions later
 import 'package:flutter_animate/flutter_animate.dart';
@@ -127,10 +126,6 @@ class _CreatePlanScreenState extends ConsumerState<CreatePlanScreen> {
             .first, // Format as YYYY-MM-DD
       };
 
-      print("--- Creating Plan Request ---");
-      print(planRequestData);
-      print("----------------------------");
-
       setState(() => _isLoading = true);
 
       // --- 2. API Integration (Placeholder) ---
@@ -218,7 +213,7 @@ class _CreatePlanScreenState extends ConsumerState<CreatePlanScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Create a New Plan'),
-        backgroundColor: theme.scaffoldBackgroundColor.withOpacity(0.9),
+        backgroundColor: theme.scaffoldBackgroundColor.withValues(alpha: 0.9),
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -232,7 +227,7 @@ class _CreatePlanScreenState extends ConsumerState<CreatePlanScreen> {
               Text(
                 "Let's customize your perfect resort experience",
                 style: theme.textTheme.titleMedium?.copyWith(
-                  color: theme.colorScheme.onSurface.withOpacity(0.7),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
               ).animate().fadeIn(delay: 100.ms),
               const SizedBox(height: 30),
@@ -253,7 +248,7 @@ class _CreatePlanScreenState extends ConsumerState<CreatePlanScreen> {
                         19, // (1000 - 50) / 50 = 19 divisions for $50 increments
                     label: "\$${_budget.round()}",
                     activeColor: AppColors.primary,
-                    inactiveColor: AppColors.primary.withOpacity(0.3),
+                    inactiveColor: AppColors.primary.withValues(alpha: 0.3),
                     onChanged: (value) {
                       setState(() {
                         _budget = value;
@@ -299,14 +294,15 @@ class _CreatePlanScreenState extends ConsumerState<CreatePlanScreen> {
                     checkmarkColor:
                         theme.colorScheme.onPrimary, // Optional: show checkmark
                     showCheckmark: true,
-                    backgroundColor:
-                        theme.colorScheme.surfaceVariant.withOpacity(0.5),
+                    backgroundColor: theme.colorScheme.surfaceContainerHighest
+                        .withValues(alpha: 0.5),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                         side: BorderSide(
                             color: isSelected
                                 ? theme.colorScheme.primary
-                                : theme.colorScheme.outline.withOpacity(0.5),
+                                : theme.colorScheme.outline
+                                    .withValues(alpha: 0.5),
                             width: 1.5)),
                     onSelected: (selected) {
                       if (selected) {
@@ -364,9 +360,9 @@ class _CreatePlanScreenState extends ConsumerState<CreatePlanScreen> {
                               vertical: 15, horizontal: 10),
                           decoration: BoxDecoration(
                               color: isSelected
-                                  ? AppColors.accent.withOpacity(0.15)
-                                  : theme.colorScheme.surfaceVariant
-                                      .withOpacity(0.4),
+                                  ? AppColors.accent.withValues(alpha: 0.15)
+                                  : theme.colorScheme.surfaceContainerHighest
+                                      .withValues(alpha: 0.4),
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
                                   color: isSelected
@@ -379,7 +375,7 @@ class _CreatePlanScreenState extends ConsumerState<CreatePlanScreen> {
                                   color: isSelected
                                       ? AppColors.accent
                                       : theme.colorScheme.onSurface
-                                          .withOpacity(0.7),
+                                          .withValues(alpha: 0.7),
                                   size: 28),
                               const SizedBox(height: 8),
                               Text(label,
@@ -392,9 +388,10 @@ class _CreatePlanScreenState extends ConsumerState<CreatePlanScreen> {
                               Text(subLabel,
                                   style: theme.textTheme.bodySmall?.copyWith(
                                       color: isSelected
-                                          ? AppColors.accent.withOpacity(0.9)
+                                          ? AppColors.accent
+                                              .withValues(alpha: 0.9)
                                           : theme.colorScheme.onSurface
-                                              .withOpacity(0.6)),
+                                              .withValues(alpha: 0.6)),
                                   textAlign: TextAlign.center),
                             ],
                           ),
@@ -421,7 +418,7 @@ class _CreatePlanScreenState extends ConsumerState<CreatePlanScreen> {
                     label: _getIntensityName(_selectedIntensity)
                         .capitalize(), // Capitalize first letter
                     activeColor: AppColors.secondary, // Use secondary color
-                    inactiveColor: AppColors.secondary.withOpacity(0.3),
+                    inactiveColor: AppColors.secondary.withValues(alpha: 0.3),
                     onChanged: (value) {
                       setState(() {
                         _selectedIntensity = value;
@@ -482,8 +479,8 @@ class _CreatePlanScreenState extends ConsumerState<CreatePlanScreen> {
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12)),
                         filled: true,
-                        fillColor:
-                            theme.colorScheme.surfaceVariant.withOpacity(0.3),
+                        fillColor: theme.colorScheme.surfaceContainerHighest
+                            .withValues(alpha: 0.3),
                       ),
                       onTap: () =>
                           _selectDate(context, true), // Also trigger on tap
@@ -506,8 +503,8 @@ class _CreatePlanScreenState extends ConsumerState<CreatePlanScreen> {
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12)),
                         filled: true,
-                        fillColor:
-                            theme.colorScheme.surfaceVariant.withOpacity(0.3),
+                        fillColor: theme.colorScheme.surfaceContainerHighest
+                            .withValues(alpha: 0.3),
                       ),
                       onTap: () => _selectDate(context, false),
                       // Simple validation: Ensure end date is after start date if both are entered
@@ -584,9 +581,9 @@ class _CreatePlanScreenState extends ConsumerState<CreatePlanScreen> {
 // Helper extension for capitalizing strings (optional)
 extension StringExtension on String {
   String capitalize() {
-    if (this.isEmpty) {
+    if (isEmpty) {
       return "";
     }
-    return "${this[0].toUpperCase()}${this.substring(1).toLowerCase()}";
+    return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
   }
 }

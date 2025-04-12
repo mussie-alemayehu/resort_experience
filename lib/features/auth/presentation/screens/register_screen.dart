@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:resort_experience/config/theme/app_colors.dart';
+import 'package:resort_experience/features/auth/providers/auth_provider.dart';
 
 import '../../../../config/router/app_routes.dart';
 // Import your LoginScreen for navigation
@@ -11,6 +12,13 @@ import '../../../../config/router/app_routes.dart';
 class RegisterScreen extends ConsumerWidget {
   RegisterScreen({super.key});
 
+  final formKey = GlobalKey<FormState>();
+  final firstNameController = TextEditingController();
+  final lastNameController = TextEditingController();
+  final emailController = TextEditingController();
+  final phoneController = TextEditingController();
+  final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
   final registerLoadingProvider = StateProvider<bool>((ref) => false);
 // Provider for password visibility
   final registerPasswordVisibleProvider = StateProvider<bool>((ref) => false);
@@ -39,56 +47,42 @@ class RegisterScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
-    final formKey = GlobalKey<FormState>();
-    final firstNameController = TextEditingController();
-    final lastNameController = TextEditingController();
-    final emailController = TextEditingController();
-    final phoneController = TextEditingController();
-    final passwordController = TextEditingController();
-    final confirmPasswordController = TextEditingController();
 
     final isLoading = ref.watch(registerLoadingProvider);
     final isPasswordVisible = ref.watch(registerPasswordVisibleProvider);
     final isConfirmPasswordVisible =
         ref.watch(registerConfirmPasswordVisibleProvider);
     final enableAnimations = ref.watch(enableAnimationsProvider);
-    print(enableAnimations);
 
     // Simple Ethiopia phone number regex (adjust if needed)
     final phoneRegex = RegExp(r'^(?:\+?251|0)?9\d{8}$');
     // Basic password strength regex (example: min 8 chars, 1 letter, 1 number)
     final passwordRegex = RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$');
 
-    void submitRegistration() {
+    void submitRegistration() async {
+      ref.read(enableAnimationsProvider.notifier).state = false;
       if (formKey.currentState?.validate() ?? false) {
-        ref.read(registerLoadingProvider.notifier).state =
-            true; // Start loading
-        print('Registration attempt:');
-        print('First Name: ${firstNameController.text}');
-        print('Last Name: ${lastNameController.text}');
-        print('Email: ${emailController.text}');
-        print('Phone: ${phoneController.text}');
-        print('Password: ${passwordController.text}');
+        ref.read(registerLoadingProvider.notifier).state = true;
 
-        // --- TODO: Implement actual registration logic here ---
-        // Example: Call your authentication service/provider
-        // await ref.read(authProvider.notifier).register(...);
-
-        // Simulate network call
-        Future.delayed(const Duration(seconds: 2), () {
-          ref.read(registerLoadingProvider.notifier).state =
-              false; // Stop loading
-          // TODO: Navigate on success (e.g., to Login or Home) or show error
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Registration Successful (Mock)!')),
-          );
+        try {
+          await ref.read(authProvider.notifier).register(
+                email: emailController.text,
+                password: passwordController.text,
+                firstName: firstNameController.text,
+                lastName: lastNameController.text,
+                phoneNumber: phoneController.text,
+              );
+          // No navigation needed here - GoRouter redirect will handle it
           context.go(AppRoutes.dashboard);
-          // Example: Navigate to Login Screen after successful registration
-          // Navigator.pushReplacement(
-          //   context,
-          //   MaterialPageRoute(builder: (context) => const LoginScreen()),
-          // );
-        });
+        } catch (e) {
+          // Hide loading indicator
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Registration Failed: ${e.toString()}')),
+          );
+        }
+        if (context.mounted) {
+          ref.read(registerLoadingProvider.notifier).state = false;
+        }
       }
     }
 
