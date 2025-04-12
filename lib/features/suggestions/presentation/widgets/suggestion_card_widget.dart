@@ -1,204 +1,168 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../../models/suggestion.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:resort_experience/config/theme/app_colors.dart'; // Your colors
+import 'package:resort_experience/core/icon_getter.dart';
 
-class SuggestionCard extends StatelessWidget {
+import '../../models/suggestion.dart'; // Your Suggestion model
+import '../../providers/activity_completion_provider.dart'; // Import the new provider
+
+// Make it a ConsumerWidget to access providers
+class SuggestionCard extends ConsumerWidget {
   final Suggestion suggestion;
   final Duration animationDelay;
+  final String planId;
 
   const SuggestionCard({
     super.key,
     required this.suggestion,
-    this.animationDelay = Duration.zero, // Delay for staggering animations
+    this.animationDelay = Duration.zero,
+    required this.planId,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final textTheme = theme.textTheme; // Use defined text themes
+    final textTheme = theme.textTheme;
 
-    return Container(
-      height: 320, // Increased height for better image display
-      margin: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface, // Use theme surface color
-        borderRadius: BorderRadius.circular(24), // More rounded corners
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.15),
-            blurRadius: 15,
-            spreadRadius: 2,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: Stack(
-          children: [
-            // --- Background Image ---
-            Positioned.fill(
-              child: Image.network(
-                suggestion.imageUrl,
-                fit: BoxFit.cover,
-                // Loading Builder for smoother image loading
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Center(
-                    child: CircularProgressIndicator(
-                      value: loadingProgress.expectedTotalBytes != null
-                          ? loadingProgress.cumulativeBytesLoaded /
-                              loadingProgress.expectedTotalBytes!
-                          : null,
-                      strokeWidth: 2,
-                      color: suggestion.highlightColor,
-                    ),
-                  );
-                },
-                errorBuilder: (context, error, stackTrace) => Container(
-                  color: Colors.grey[300],
-                  child: Icon(Icons.broken_image, color: Colors.grey[600]),
+    // Watch the completion status for this specific suggestion
+    // Use suggestion.id as the key
+    final isCompleted =
+        ref.watch(activityCompletionProvider(planId))[suggestion.id] ?? false;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Material(
+        // Use Material for InkWell splash effect
+        color: theme.cardColor, // Use cardColor from theme
+        borderRadius: BorderRadius.circular(12.0),
+        elevation: isCompleted ? 0.5 : 2.0, // Subtle elevation change
+        shadowColor: Colors.black.withValues(alpha: 0.1),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12.0),
+          onTap: () {},
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // --- Icon ---
+                Icon(
+                  // Call the helper function instead of accessing suggestion.iconData
+                  IconGetter.getIconForSuggestion(suggestion),
+                  color: isCompleted
+                      ? AppColors.success // Keep color logic
+                      : theme.colorScheme.primary,
+                  size: 28,
                 ),
-              ).animate(delay: animationDelay).fadeIn(duration: 700.ms),
-            ),
+                const SizedBox(width: 16),
 
-            // --- Gradient Overlay ---
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.black
-                          .withValues(alpha: 0.0), // More transparency at top
-                      Colors.black.withValues(alpha: 0.85), // Darker at bottom
+                // --- Text Content ---
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        suggestion.title,
+                        style: textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          // Dim title slightly if completed
+                          color: isCompleted
+                              ? textTheme.bodyMedium?.color?.withValues(
+                                  alpha: 0.7) // Adjusted opacity application
+                              : textTheme.bodyLarge
+                                  ?.color, // Use bodyLarge or titleLarge color
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        suggestion.description,
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: isCompleted
+                              ? theme.colorScheme.onSurface.withValues(
+                                  alpha: 0.5) // Adjusted opacity application
+                              : theme.colorScheme.onSurface
+                                  .withValues(alpha: 0.7),
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    stops: const [0.4, 1.0], // Gradient starts lower
                   ),
                 ),
-              ),
-            ),
+                const SizedBox(width: 16),
 
-            // --- Content ---
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min, // Take minimum space needed
+                // --- Duration & Completion Toggle ---
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment:
+                      MainAxisAlignment.spaceBetween, // Align items vertically
                   children: [
-                    // Location Tag
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
+                    // --- Duration ---
+                    // **IMPORTANT:** Use the correct field from your Suggestion model
+                    // Renamed suggestion.timeLabel -> suggestion.durationLabel for clarity
+                    Text(
+                      suggestion
+                          .timeLabel, // Use the appropriate field (e.g., durationLabel)
+                      style: textTheme.bodySmall?.copyWith(
                         color:
-                            suggestion.highlightColor.withValues(alpha: 0.85),
-                        borderRadius: BorderRadius.circular(12),
+                            theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
-                      child: Text(
-                        suggestion.location.toUpperCase(),
-                        style: textTheme.labelSmall?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 0.5,
+                    ),
+                    const SizedBox(height: 25), // Space for the button
+
+                    // --- Completion Toggle ---
+                    InkWell(
+                      onTap: () {
+                        // Call the provider method to toggle the state
+                        ref
+                            .read(activityCompletionProvider(planId).notifier)
+                            .toggleCompletion(suggestion.id);
+                      },
+                      borderRadius: BorderRadius.circular(8),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 4.0,
+                            vertical: 2.0), // Small padding for tap area
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              isCompleted
+                                  ? Icons.check_circle // Filled green check
+                                  : Icons
+                                      .radio_button_unchecked_outlined, // Outline grey/primary check
+                              color: isCompleted
+                                  ? AppColors.success
+                                  : theme.colorScheme.primary
+                                      .withValues(alpha: 0.7),
+                              size: 20,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              isCompleted ? 'Completed' : 'Mark as done',
+                              style: textTheme.labelLarge?.copyWith(
+                                  color: isCompleted
+                                      ? AppColors.success
+                                      : theme.colorScheme.primary
+                                          .withValues(alpha: 0.9),
+                                  fontWeight: FontWeight.w600),
+                            ),
+                          ],
                         ),
                       ),
-                    )
-                        .animate(delay: animationDelay + 200.ms)
-                        .fadeIn(duration: 400.ms)
-                        .slideX(begin: -0.2, curve: Curves.easeOut),
-
-                    const SizedBox(height: 12),
-
-                    // Title
-                    Text(
-                      suggestion.title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: textTheme.headlineSmall?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        shadows: [
-                          // Subtle shadow for better contrast
-                          Shadow(
-                            blurRadius: 4.0,
-                            color: Colors.black.withValues(alpha: 0.5),
-                            offset: const Offset(1.0, 1.0),
-                          ),
-                        ],
-                      ),
-                    )
-                        .animate(delay: animationDelay + 300.ms)
-                        .fadeIn(duration: 500.ms)
-                        .slideY(begin: 0.2, curve: Curves.easeOutCirc),
-
-                    const SizedBox(height: 8),
-
-                    // Description
-                    Text(
-                      suggestion.description,
-                      maxLines: 3, // Limit description lines
-                      overflow: TextOverflow.ellipsis,
-                      style: textTheme.bodyMedium?.copyWith(
-                        color: Colors.white.withValues(alpha: 0.9),
-                        height: 1.4, // Line height
-                      ),
-                    )
-                        .animate(delay: animationDelay + 450.ms)
-                        .fadeIn(duration: 500.ms)
-                        .slideY(begin: 0.3, curve: Curves.easeOut),
-
-                    const SizedBox(height: 16),
-
-                    // Time Label
-                    Row(
-                      children: [
-                        Icon(Icons.access_time_rounded,
-                            color: suggestion.highlightColor, size: 16),
-                        const SizedBox(width: 6),
-                        Text(
-                          suggestion.timeLabel,
-                          style: textTheme.bodySmall?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    )
-                        .animate(delay: animationDelay + 550.ms)
-                        .fadeIn(duration: 400.ms),
+                    ),
                   ],
                 ),
-              ),
+              ],
             ),
-
-            // Optional: Add interaction (e.g., tap to view details)
-            Positioned.fill(
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(24),
-                  onTap: () {
-                    // TODO: Navigate to suggestion detail page or show modal
-                    print("Tapped suggestion: ${suggestion.title}");
-                  },
-                  splashColor: suggestion.highlightColor.withValues(alpha: 0.3),
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     )
         // --- Card Entrance Animation ---
         .animate(delay: animationDelay)
-        .fadeIn(duration: 600.ms)
-        .scaleXY(begin: 0.95, curve: Curves.easeOutBack)
-        .moveY(begin: 30, curve: Curves.easeOut);
+        .fadeIn(duration: 500.ms)
+        .moveY(begin: 20, curve: Curves.easeOut);
   }
 }

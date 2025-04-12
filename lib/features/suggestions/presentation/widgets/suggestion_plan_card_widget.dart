@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:go_router/go_router.dart';
+import 'package:resort_experience/config/router/app_routes.dart';
 import '../../models/suggestion_plan.dart';
-import '../screens/suggestion_activities_screen.dart'; // Import the renamed screen
 
 class SuggestionPlanCard extends StatelessWidget {
   final SuggestionPlan plan;
@@ -25,7 +26,7 @@ class SuggestionPlanCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 12,
             spreadRadius: 1,
             offset: const Offset(0, 6),
@@ -67,8 +68,9 @@ class SuggestionPlanCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      plan.highlightColor.withOpacity(0.3), // Top color tint
-                      Colors.black.withOpacity(0.7), // Darker at bottom
+                      plan.highlightColor
+                          .withValues(alpha: 0.3), // Top color tint
+                      Colors.black.withValues(alpha: 0.7), // Darker at bottom
                     ],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
@@ -90,7 +92,8 @@ class SuggestionPlanCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Icon(plan.icon,
-                            color: Colors.white.withOpacity(0.9), size: 36)
+                            color: Colors.white.withValues(alpha: 0.9),
+                            size: 36)
                         .animate(delay: animationDelay + 300.ms)
                         .fadeIn(duration: 400.ms)
                         .slideX(begin: -0.3, curve: Curves.easeOut),
@@ -111,7 +114,7 @@ class SuggestionPlanCard extends StatelessWidget {
                               shadows: [
                                 Shadow(
                                     blurRadius: 3.0,
-                                    color: Colors.black.withOpacity(0.5)),
+                                    color: Colors.black.withValues(alpha: 0.5)),
                               ],
                             ),
                           )
@@ -124,7 +127,7 @@ class SuggestionPlanCard extends StatelessWidget {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: textTheme.bodyMedium?.copyWith(
-                              color: Colors.white.withOpacity(0.85),
+                              color: Colors.white.withValues(alpha: 0.85),
                               height: 1.3,
                             ),
                           )
@@ -146,20 +149,14 @@ class SuggestionPlanCard extends StatelessWidget {
                 child: InkWell(
                   borderRadius: BorderRadius.circular(20),
                   onTap: () {
-                    print("Tapped plan: ${plan.title}");
                     // Navigate to the detailed activities screen
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SuggestionActivitiesScreen(
-                          planTitle: plan.title, // Pass the title
-                          // TODO: In a real app, pass plan.id and use it to fetch/filter activities in SuggestionActivitiesScreen
-                        ),
-                      ),
+                    context.push(
+                      AppRoutes.suggestionActivities,
+                      extra: {'planTitle': plan.title, 'planId': plan.id},
                     );
                   },
-                  splashColor: plan.highlightColor.withOpacity(0.3),
-                  highlightColor: plan.highlightColor.withOpacity(0.15),
+                  splashColor: plan.highlightColor.withValues(alpha: 0.3),
+                  highlightColor: plan.highlightColor.withValues(alpha: 0.15),
                 ),
               ),
             ),
