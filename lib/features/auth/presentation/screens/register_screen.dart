@@ -6,14 +6,33 @@ import 'package:resort_experience/config/theme/app_colors.dart';
 // import 'login_screen.dart'; // Assuming it's in the same directory
 
 // Example: Provider for loading state
-final registerLoadingProvider = StateProvider<bool>((ref) => false);
-// Provider for password visibility
-final registerPasswordVisibleProvider = StateProvider<bool>((ref) => false);
-final registerConfirmPasswordVisibleProvider =
-    StateProvider<bool>((ref) => false);
 
 class RegisterScreen extends ConsumerWidget {
-  const RegisterScreen({super.key});
+  RegisterScreen({super.key});
+
+  final registerLoadingProvider = StateProvider<bool>((ref) => false);
+// Provider for password visibility
+  final registerPasswordVisibleProvider = StateProvider<bool>((ref) => false);
+  final registerConfirmPasswordVisibleProvider =
+      StateProvider<bool>((ref) => false);
+  final enableAnimationsProvider = StateProvider<bool>((ref) => true);
+
+  Widget animatedWidget(Widget child, Duration delay, Duration duration,
+      {required bool enableAnimations,
+      double moveYBegin = 0,
+      double moveXBegin = 0,
+      Offset scaleBegin = const Offset(1, 1)}) {
+    if (enableAnimations) {
+      return child
+          .animate()
+          .fadeIn(delay: delay, duration: duration)
+          .moveY(begin: moveYBegin)
+          .moveX(begin: moveXBegin)
+          .scale(begin: scaleBegin);
+    } else {
+      return child; // Return the widget without animation
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -31,6 +50,8 @@ class RegisterScreen extends ConsumerWidget {
     final isPasswordVisible = ref.watch(registerPasswordVisibleProvider);
     final isConfirmPasswordVisible =
         ref.watch(registerConfirmPasswordVisibleProvider);
+    final enableAnimations = ref.watch(enableAnimationsProvider);
+    print(enableAnimations);
 
     // Simple Ethiopia phone number regex (adjust if needed)
     final phoneRegex = RegExp(r'^(?:\+?251|0)?9\d{8}$');
@@ -97,31 +118,39 @@ class RegisterScreen extends ConsumerWidget {
               children: [
                 // --- Header Text ---
                 const SizedBox(height: 40), // Space below AppBar
-                Text(
-                  'Join Kuriftu Experience',
-                  textAlign: TextAlign.center,
-                  style: textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
-                  ),
-                )
-                    .animate()
-                    .fadeIn(delay: 300.ms, duration: 500.ms)
-                    .moveY(begin: -10),
+                animatedWidget(
+                    Text(
+                      'Join Kuriftu Experience',
+                      textAlign: TextAlign.center,
+                      style: textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    300.ms,
+                    500.ms,
+                    enableAnimations: enableAnimations),
                 const SizedBox(height: 8),
-                Text(
-                  'Fill in the details below to get started.',
-                  textAlign: TextAlign.center,
-                  style: textTheme.titleMedium?.copyWith(
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-                  ),
-                ).animate().fadeIn(delay: 400.ms, duration: 500.ms),
+
+                animatedWidget(
+                    Text(
+                      'Fill in the details below to get started.',
+                      textAlign: TextAlign.center,
+                      style: textTheme.titleMedium?.copyWith(
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                      ),
+                    ),
+                    400.ms,
+                    500.ms,
+                    enableAnimations: enableAnimations),
                 const SizedBox(height: 40),
 
                 // --- First Name Field ---
                 _buildTextFormField(
                   context: context,
                   controller: firstNameController,
+                  enableAnimations: enableAnimations,
                   hintText: 'First Name',
                   prefixIcon: Icons.person_outline_rounded,
                   validator: (value) => value == null || value.isEmpty
@@ -135,6 +164,7 @@ class RegisterScreen extends ConsumerWidget {
                 _buildTextFormField(
                   context: context,
                   controller: lastNameController,
+                  enableAnimations: enableAnimations,
                   hintText: 'Last Name',
                   prefixIcon: Icons.person_outline, // Slightly different icon
                   validator: (value) => value == null || value.isEmpty
@@ -148,6 +178,7 @@ class RegisterScreen extends ConsumerWidget {
                 _buildTextFormField(
                   context: context,
                   controller: emailController,
+                  enableAnimations: enableAnimations,
                   hintText: 'Email Address',
                   prefixIcon: Icons.email_outlined,
                   keyboardType: TextInputType.emailAddress,
@@ -168,6 +199,7 @@ class RegisterScreen extends ConsumerWidget {
                 _buildTextFormField(
                   context: context,
                   controller: phoneController,
+                  enableAnimations: enableAnimations,
                   hintText: 'Phone Number (e.g., 09... or +2519...)',
                   prefixIcon: Icons.phone_outlined,
                   keyboardType: TextInputType.phone,
@@ -188,6 +220,7 @@ class RegisterScreen extends ConsumerWidget {
                 _buildTextFormField(
                   context: context,
                   controller: passwordController,
+                  enableAnimations: enableAnimations,
                   hintText: 'Password',
                   prefixIcon: Icons.lock_outline_rounded,
                   obscureText: !isPasswordVisible,
@@ -207,9 +240,11 @@ class RegisterScreen extends ConsumerWidget {
                           : Icons.visibility_outlined,
                       color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
-                    onPressed: () => ref
-                        .read(registerPasswordVisibleProvider.notifier)
-                        .state = !isPasswordVisible,
+                    onPressed: () {
+                      ref.read(enableAnimationsProvider.notifier).state = false;
+                      ref.read(registerPasswordVisibleProvider.notifier).state =
+                          !isPasswordVisible;
+                    },
                   ),
                   delay: 900.ms,
                 ),
@@ -219,6 +254,7 @@ class RegisterScreen extends ConsumerWidget {
                 _buildTextFormField(
                   context: context,
                   controller: confirmPasswordController,
+                  enableAnimations: enableAnimations,
                   hintText: 'Confirm Password',
                   prefixIcon: Icons.lock_outline_rounded,
                   obscureText: !isConfirmPasswordVisible,
@@ -238,73 +274,87 @@ class RegisterScreen extends ConsumerWidget {
                           : Icons.visibility_outlined,
                       color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
-                    onPressed: () => ref
-                        .read(registerConfirmPasswordVisibleProvider.notifier)
-                        .state = !isConfirmPasswordVisible,
+                    onPressed: () {
+                      ref
+                          .read(registerConfirmPasswordVisibleProvider.notifier)
+                          .state = !isConfirmPasswordVisible;
+
+                      ref.read(enableAnimationsProvider.notifier).state = false;
+                    },
                   ),
                   delay: 1000.ms,
                 ),
                 const SizedBox(height: 30),
 
                 // --- Register Button ---
-                ElevatedButton(
-                  onPressed: isLoading ? null : submitRegistration,
-                  style: theme.elevatedButtonTheme.style?.copyWith(
-                    minimumSize: WidgetStateProperty.all(
-                        const Size(double.infinity, 50)), // Full width
-                    // Use secondary color for registration button? Or keep primary?
-                    // backgroundColor: MaterialStateProperty.all(AppColors.secondary),
-                    // foregroundColor: MaterialStateProperty.all(AppColors.textDark) // Adjust if using secondary
+                animatedWidget(
+                  ElevatedButton(
+                    onPressed: isLoading ? null : submitRegistration,
+                    style: theme.elevatedButtonTheme.style?.copyWith(
+                      minimumSize: WidgetStateProperty.all(
+                          const Size(double.infinity, 50)), // Full width
+                      // Use secondary color for registration button? Or keep primary?
+                      // backgroundColor: MaterialStateProperty.all(AppColors.secondary),
+                      // foregroundColor: MaterialStateProperty.all(AppColors.textDark) // Adjust if using secondary
+                    ),
+                    child: isLoading
+                        ? const SizedBox(
+                            height: 24,
+                            width: 24,
+                            child: CircularProgressIndicator(
+                              color:
+                                  Colors.white, // Or adjust based on button bg
+                              strokeWidth: 2.5,
+                            ),
+                          )
+                        : const Text('Register'),
                   ),
-                  child: isLoading
-                      ? const SizedBox(
-                          height: 24,
-                          width: 24,
-                          child: CircularProgressIndicator(
-                            color: Colors.white, // Or adjust based on button bg
-                            strokeWidth: 2.5,
-                          ),
-                        )
-                      : const Text('Register'),
-                )
-                    .animate(delay: 1100.ms)
-                    .fadeIn(duration: 400.ms)
-                    .moveY(begin: 20),
+                  1100.ms,
+                  400.ms,
+                  moveYBegin: 20,
+                  enableAnimations: enableAnimations,
+                ),
                 const SizedBox(height: 20),
 
                 // --- Navigation to Login Screen ---
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Already have an account?',
-                      style: textTheme.bodyMedium,
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        // Navigate back to Login Screen
-                        if (Navigator.canPop(context)) {
-                          Navigator.pop(context);
-                        } else {
-                          // Fallback if it wasn't pushed onto the stack
-                          // TODO: Replace with actual navigation
-                          // Navigator.pushReplacement(
-                          //   context,
-                          //   MaterialPageRoute(builder: (context) => const LoginScreen()),
-                          // );
-                          print('Navigate back to Login Screen');
-                        }
-                      },
-                      child: Text(
-                        'Login Here',
-                        style: textTheme.bodyMedium?.copyWith(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.bold,
+                animatedWidget(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Already have an account?',
+                        style: textTheme.bodyMedium,
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          // Navigate back to Login Screen
+                          if (Navigator.canPop(context)) {
+                            Navigator.pop(context);
+                          } else {
+                            // Fallback if it wasn't pushed onto the stack
+                            // TODO: Replace with actual navigation
+                            // Navigator.pushReplacement(
+                            //   context,
+                            //   MaterialPageRoute(builder: (context) => const LoginScreen()),
+                            // );
+                            print('Navigate back to Login Screen');
+                          }
+                        },
+                        child: Text(
+                          'Login Here',
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ).animate(delay: 1200.ms).fadeIn(duration: 400.ms),
+                    ],
+                  ),
+                  1200.ms,
+                  400.ms,
+                  moveYBegin: 20,
+                  enableAnimations: enableAnimations,
+                ),
                 const SizedBox(height: 20), // Bottom padding
               ],
             ),
@@ -323,48 +373,50 @@ class RegisterScreen extends ConsumerWidget {
     required String hintText,
     required IconData prefixIcon,
     required Duration delay,
+    required bool enableAnimations,
     TextInputType keyboardType = TextInputType.text,
     bool obscureText = false,
     String? Function(String?)? validator,
     Widget? suffixIcon,
   }) {
     final theme = Theme.of(context);
-    return TextFormField(
-      controller: controller,
-      obscureText: obscureText,
-      keyboardType: keyboardType,
-      validator: validator,
-      decoration: InputDecoration(
-        hintText: hintText,
-        prefixIcon: Icon(prefixIcon,
-            color: theme.colorScheme.onSurface.withValues(alpha: 0.6)),
-        suffixIcon: suffixIcon,
-        filled: true,
-        fillColor: theme.colorScheme.surface
-            .withValues(alpha: 0.5), // Slightly transparent
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.0),
-          borderSide: BorderSide.none, // No border, rely on fill color
+    return animatedWidget(
+        TextFormField(
+          controller: controller,
+          obscureText: obscureText,
+          keyboardType: keyboardType,
+          validator: validator,
+          decoration: InputDecoration(
+            hintText: hintText,
+            prefixIcon: Icon(prefixIcon,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6)),
+            suffixIcon: suffixIcon,
+            filled: true,
+            fillColor: theme.colorScheme.surface
+                .withValues(alpha: 0.5), // Slightly transparent
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: BorderSide.none, // No border, rely on fill color
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: BorderSide(color: AppColors.primary, width: 1.5),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: BorderSide(color: AppColors.error, width: 1.0),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              borderSide: BorderSide(color: AppColors.error, width: 1.5),
+            ),
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
+          ),
+          style: theme.textTheme.bodyLarge,
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.0),
-          borderSide: BorderSide(color: AppColors.primary, width: 1.5),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.0),
-          borderSide: BorderSide(color: AppColors.error, width: 1.0),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.0),
-          borderSide: BorderSide(color: AppColors.error, width: 1.5),
-        ),
-        contentPadding:
-            const EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
-      ),
-      style: theme.textTheme.bodyLarge,
-    )
-        .animate()
-        .fadeIn(delay: delay, duration: 500.ms)
-        .moveX(begin: -20, curve: Curves.easeOut); // Slide in from left
+        delay,
+        500.ms,
+        enableAnimations: enableAnimations);
   }
 }
