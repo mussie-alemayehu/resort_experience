@@ -30,17 +30,6 @@ class DashboardScreen extends StatelessWidget {
                 .fade(delay: 300.ms)
                 .slideY(begin: 0.5), // Example animation
             const SizedBox(height: 30),
-
-            ElevatedButton(
-              onPressed: () => context.push(AppRoutes.login),
-              child: const Text('Login'),
-            ).animate().fade(delay: 500.ms).slideX(),
-            const SizedBox(height: 15),
-            ElevatedButton(
-              onPressed: () => context.push(AppRoutes.register),
-              child: const Text('Register'),
-            ).animate().fade(delay: 600.ms).slideX(begin: 0.5),
-            const SizedBox(height: 15),
             ElevatedButton(
               onPressed: () => context.push(AppRoutes.preferencesIntro),
               child: const Text('Set Preferences'),

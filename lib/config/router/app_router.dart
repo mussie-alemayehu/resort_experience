@@ -4,8 +4,8 @@ import 'package:resort_experience/features/auth/presentation/screens/login_scree
 import 'package:resort_experience/features/auth/presentation/screens/register_screen.dart';
 import 'package:resort_experience/features/dashboard/presentation/screens/dashboard.dart';
 import 'package:resort_experience/features/services/presentation/screens/services_screen.dart';
-import 'package:resort_experience/features/preferences/presentation/screens/add_preferences_screen.dart';
 import 'package:resort_experience/features/preferences/presentation/screens/preferences_intro_screen.dart';
+import 'package:resort_experience/features/suggestions/presentation/screens/create_plan_screen.dart';
 import 'package:resort_experience/features/suggestions/presentation/screens/suggestion_activities_screen.dart';
 import 'package:resort_experience/features/suggestions/presentation/screens/suggestions_screen.dart';
 
@@ -13,7 +13,7 @@ import 'app_routes.dart'; // Import your routes
 
 final GoRouter appRouter = GoRouter(
   // navigatorKey: _rootNavigatorKey, // Optional
-  initialLocation: AppRoutes.dashboard, // Start at the dashboard
+  initialLocation: AppRoutes.login, // Start at the dashboard
   routes: [
     GoRoute(
       path: AppRoutes.login,
@@ -48,14 +48,14 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const PreferencesScreen(),
     ),
     GoRoute(
-      path: AppRoutes.addPreference,
-      name: AppRoutes.addPreference,
-      builder: (context, state) => const AddPreferenceScreen(),
-    ),
-    GoRoute(
       path: AppRoutes.suggestionPlans,
       name: AppRoutes.suggestionPlans,
       builder: (context, state) => const SuggestionsScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.createPlan,
+      name: AppRoutes.createPlan,
+      builder: (context, state) => const CreatePlanScreen(),
     ),
     GoRoute(
       path: AppRoutes.suggestionActivities,

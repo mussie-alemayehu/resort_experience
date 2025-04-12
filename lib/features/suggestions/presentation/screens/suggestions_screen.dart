@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:go_router/go_router.dart';
+import 'package:resort_experience/config/router/app_routes.dart';
 import 'package:resort_experience/config/theme/app_colors.dart'; // Use your theme colors
 import '../../providers/suggestion_plans_provider.dart';
 import '../widgets/suggestion_plan_card_widget.dart'; // Import the new card
@@ -33,7 +35,7 @@ class SuggestionsScreen extends ConsumerWidget {
                 top: 10.0, left: 20.0, right: 20.0, bottom: 10.0),
             sliver: SliverToBoxAdapter(
               child: Text(
-                "Select a curated plan or customize your perfect day at Kuriftu.",
+                'Select a curated plan or customize your perfect day at Kuriftu.',
                 textAlign: TextAlign.center,
                 style: textTheme.titleMedium?.copyWith(
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
@@ -71,37 +73,36 @@ class SuggestionsScreen extends ConsumerWidget {
             padding:
                 const EdgeInsets.symmetric(horizontal: 20.0, vertical: 25.0),
             sliver: SliverToBoxAdapter(
-                child: Column(
-              children: [
-                _buildActionButton(
-                  context: context,
-                  icon: Icons.add_circle_outline_rounded,
-                  label: "Create Your Own Suggestion",
-                  color: AppColors.accent, // Or your theme's accent
-                  onTap: () {
-                    // TODO: Navigate to a custom suggestion creation screen
-                    print("Navigate to Create Suggestion");
-                  },
-                  delay: Duration(
-                      milliseconds: 150 * suggestionPlans.length +
-                          700), // Animate after list
-                ),
-                const SizedBox(height: 15),
-                _buildActionButton(
-                  context: context,
-                  icon: Icons.tune_rounded,
-                  label: "Update Your Preferences",
-                  color: AppColors.secondary, // Or your theme's secondary
-                  onTap: () {
-                    // TODO: Navigate to user preferences screen
-                    print("Navigate to Update Preferences");
-                  },
-                  delay: Duration(
-                      milliseconds: 150 * suggestionPlans.length +
-                          800), // Animate after first button
-                ),
-              ],
-            )),
+              child: Column(
+                children: [
+                  _buildActionButton(
+                    context: context,
+                    icon: Icons.add_circle_outline_rounded,
+                    label: 'Create New Suggestion',
+                    color: AppColors.accent, // Or your theme's accent
+                    onTap: () {
+                      context.push(AppRoutes.createPlan);
+                    },
+                    delay: Duration(
+                      milliseconds: 150 * suggestionPlans.length + 700,
+                    ), // Animate after list
+                  ),
+                  const SizedBox(height: 15),
+                  _buildActionButton(
+                    context: context,
+                    icon: Icons.tune_rounded,
+                    label: 'Update Your Preferences',
+                    color: AppColors.secondary, // Or your theme's secondary
+                    onTap: () {
+                      context.push(AppRoutes.preferencesIntro);
+                    },
+                    delay: Duration(
+                      milliseconds: 150 * suggestionPlans.length + 800,
+                    ), // Animate after first button
+                  ),
+                ],
+              ),
+            ),
           ),
 
           // Bottom padding

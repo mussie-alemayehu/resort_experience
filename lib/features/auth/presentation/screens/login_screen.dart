@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:resort_experience/config/router/app_routes.dart';
 import 'package:resort_experience/config/theme/app_colors.dart';
 
 class LoginScreen extends ConsumerWidget {
@@ -47,9 +49,6 @@ class LoginScreen extends ConsumerWidget {
     void submitLogin() {
       if (formKey.currentState?.validate() ?? false) {
         ref.read(loginLoadingProvider.notifier).state = true; // Start loading
-        print('Login attempt:');
-        print('Email: ${emailController.text}');
-        print('Password: ${passwordController.text}');
 
         // --- TODO: Implement actual login logic here ---
         // Example: Call your authentication service/provider
@@ -61,11 +60,15 @@ class LoginScreen extends ConsumerWidget {
           // TODO: Navigate on success or show error message
           // Example: Navigator.pushReplacement(...) or showSnackBar
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Login Successful (Mock)!')),
+            const SnackBar(content: Text('Login Successful!')),
           );
         });
+
+        context.go(AppRoutes.dashboard);
       } else {
-        print('Login form validation failed');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Login failed.')),
+        );
       }
     }
 
@@ -195,13 +198,16 @@ class LoginScreen extends ConsumerWidget {
                       Text("Don't have an account?",
                           style: textTheme.bodyMedium),
                       TextButton(
-                          onPressed: () {
-                            print("Navigate to Register Screen");
-                          },
-                          child: Text('Register Now',
-                              style: textTheme.bodyMedium?.copyWith(
-                                  color: AppColors.primary,
-                                  fontWeight: FontWeight.bold))),
+                        onPressed: () {
+                          context.pushReplacement(AppRoutes.register);
+                        },
+                        child: Text(
+                          'Register Now',
+                          style: textTheme.bodyMedium?.copyWith(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
                     ]),
                     1000.ms,
                     400.ms,

@@ -36,6 +36,7 @@ dependencies:
   # UI & Styling
   google_fonts: ^6.1.0 
   cupertino_icons: ^1.0.6
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:resort_experience/config/theme/app_colors.dart';
+
+import '../../../../config/router/app_routes.dart';
 // Import your LoginScreen for navigation
 // import 'login_screen.dart'; // Assuming it's in the same directory
-
-// Example: Provider for loading state
 
 class RegisterScreen extends ConsumerWidget {
   RegisterScreen({super.key});
@@ -81,14 +82,13 @@ class RegisterScreen extends ConsumerWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Registration Successful (Mock)!')),
           );
+          context.go(AppRoutes.dashboard);
           // Example: Navigate to Login Screen after successful registration
           // Navigator.pushReplacement(
           //   context,
           //   MaterialPageRoute(builder: (context) => const LoginScreen()),
           // );
         });
-      } else {
-        print('Registration form validation failed');
       }
     }
 
@@ -330,15 +330,8 @@ class RegisterScreen extends ConsumerWidget {
                           // Navigate back to Login Screen
                           if (Navigator.canPop(context)) {
                             Navigator.pop(context);
-                          } else {
-                            // Fallback if it wasn't pushed onto the stack
-                            // TODO: Replace with actual navigation
-                            // Navigator.pushReplacement(
-                            //   context,
-                            //   MaterialPageRoute(builder: (context) => const LoginScreen()),
-                            // );
-                            print('Navigate back to Login Screen');
                           }
+                          context.pushReplacement(AppRoutes.login);
                         },
                         child: Text(
                           'Login Here',
