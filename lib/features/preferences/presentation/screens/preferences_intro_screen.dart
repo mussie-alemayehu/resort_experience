@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:resort_experience/core/config/theme/app_colors.dart'; // Your theme
+import 'package:resort_experience/core/endpoints.dart';
 import 'package:resort_experience/features/preferences/models/user_preferences.dart';
 import 'package:resort_experience/features/preferences/presentation/widgets/selectable_chip.dart';
 import 'package:resort_experience/features/preferences/presentation/widgets/step_title.dart';
@@ -101,33 +103,34 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     _preferences.mustDoExperiences = _mustDoController.text;
     _preferences.experiencesToAvoid = _avoidController.text;
 
-    final preferencesJson = _preferences.toJson();
+    final preferencesJson = _preferences.toString();
 
-    // --- TODO: Implement API Call ---
-    // Show loading indicator
-    // try {
-    //   final response = await http.post(
-    //     Uri.parse('YOUR_API_ENDPOINT_HERE'),
-    //     headers: {'Content-Type': 'application/json'},
-    //     body: jsonEncode(preferencesJson),
-    //   );
-    //   // Hide loading indicator
-    //   if (response.statusCode == 200 || response.statusCode == 201) {
-    //     ScaffoldMessenger.of(context).showSnackBar(
-    //       const SnackBar(content: Text('Preferences saved successfully!'), backgroundColor: AppColors.success),
-    //     );
-    //     Navigator.of(context).pop(); // Go back or navigate to confirmation
-    //   } else {
-    //     throw Exception('Failed to save preferences: ${response.body}');
-    //   }
-    // } catch (e) {
-    //   // Hide loading indicator
-    //   print("API Error: $e");
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(content: Text('Error saving preferences: $e'), backgroundColor: AppColors.error),
-    //   );
-    // }
-    // --- End TODO ---
+    try {
+      final response = await http.post(
+        Uri.parse('${Endpoints.aiBaseUrl}${Endpoints.savePreferences}'),
+        body: preferencesJson,
+      );
+
+      // Hide loading indicator
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Preferences saved successfully!'),
+              backgroundColor: AppColors.success),
+        );
+        Navigator.of(context).pop(); // Go back or navigate to confirmation
+      } else {
+        throw Exception('Failed to save preferences: ${response.body}');
+      }
+    } catch (e) {
+      // Hide loading indicator
+      print("API Error: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('Error saving preferences: $e'),
+            backgroundColor: AppColors.error),
+      );
+    }
 
     // For now, just show a confirmation message
     ScaffoldMessenger.of(context).showSnackBar(
@@ -422,7 +425,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                                 ? theme.colorScheme.onPrimary
                                 : theme.colorScheme.onSurface),
                         const SizedBox(width: 6),
-                        Text(label),
+                        Expanded(child: Text(label))
                       ],
                     ),
                     labelStyle: theme.textTheme.labelMedium?.copyWith(

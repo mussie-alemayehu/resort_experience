@@ -57,9 +57,17 @@ class AuthNotifier extends StateNotifier<AuthState> {
     _initialize(); // Check auth status on creation
   }
 
-  String? _token;
+  String? _token, _email;
   final Ref _ref;
   SharedPreferences? _prefs; // Cache instance
+
+  String? get email {
+    return _email;
+  }
+
+  void setEmail(String? email) {
+    _email = email;
+  }
 
   String? get token {
     return _token;
@@ -89,11 +97,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
         {'email': email, 'password': password},
       );
 
-      print(response);
-
       final token =
           response['access_token'] as String?; // Adjust key based on your API
       if (token != null && token.isNotEmpty) {
+        setToken(token);
+        setEmail(email);
         state = AuthState.authenticated;
       } else {
         throw Exception(response['message']?.toString() ??
@@ -101,9 +109,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
       }
     } catch (e) {
       state = AuthState.error;
-      // IMPORTANT: Rethrow so UI can catch it and show specific message
-
-      print(e);
 
       rethrow;
     }
@@ -129,12 +134,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
         if (phoneNumber != null) 'phoneNumber': phoneNumber,
       };
 
-      final reg = await _postRequest(
+      await _postRequest(
         Endpoints.registerUser, // <-- REPLACE with your register endpoint
         requestBody,
       );
-
-      print(reg);
 
       final response = await _postRequest(
         Endpoints.loginUser,
@@ -146,6 +149,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final token = response['access_token'] as String?; // Adjust key
       if (token != null && token.isNotEmpty) {
         setToken(token);
+        setEmail(email);
         state = AuthState.authenticated;
       } else {
         throw Exception(response['message']?.toString() ??
