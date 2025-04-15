@@ -25,36 +25,34 @@ Markdown
 
 Here's a glimpse into the Kuriftu Resort Companion app:
 
-<table width=100%>
+<table>
   <tr>
-    <td align="center">
-      <img src="assets/working_screenshots/Mockup 09.png" alt="Secure Login & Registration Screen" width="200"/>
+    <td align="center" valign="top" width="33%"> 
+      <img src="assets/working_screenshots/Mockup 09.png" alt="Secure Login & Registration Screen" width="95%"/> 
       <br/><sub><b>Secure Login/Registration</b></sub>
     </td>
-    <td align="center">
-      <img src="assets/working_screenshots/Mockup 03.png" alt="Multi-Step Preference Form" width="200"/>
+    <td align="center" valign="top" width="33%">
+      <img src="assets/working_screenshots/Mockup 03.png" alt="Multi-Step Preference Form" width="95%"/>
       <br/><sub><b>Preference Collection Form</b></sub>
     </td>
-  </tr>
-  <tr>
-   <td align="center">
-      <img src="assets/working_screenshots/Mockup 20.png" alt="Custom Plan Creation Interface" width="200"/>
-      <br/><sub><b>Custom Plan Creation</b></sub>
-    </td>
-    <td align="center">
-      <img src="assets/working_screenshots/Mockup 21.png" alt="Activity List & Tracking View" width="200"/>
-      <br/><sub><b>Activity Tracking</b></sub>
-    </td>
-     <td align="center" style="border: none;">
-    </td> 
-  </tr>
-  <tr>
-     <td align="center">
-      <img src="assets/working_screenshots/Mockup 19.png" alt="AI Generated Itinerary Display" width="200"/>
+     <td align="center" valign="top" width="33%">
+      <img src="assets/working_screenshots/Mockup 19.png" alt="AI Generated Itinerary Display" width="95%"/>
       <br/><sub><b>AI-Generated Plan</b></sub>
     </td>
   </tr>
+  <tr>
+   <td align="center" valign="top" width="33%">
+      <img src="assets/working_screenshots/Mockup 20.png" alt="Custom Plan Creation Interface" width="95%"/>
+      <br/><sub><b>Custom Plan Creation</b></sub>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <img src="assets/working_screenshots/Mockup 21.png" alt="Activity List & Tracking View" width="95%"/>
+      <br/><sub><b>Activity Tracking</b></sub>
+    </td>
+     <td align="center" valign="top" width="33%" style="border: none;"></td>
+  </tr>
 </table>
+
 
 ---
 
@@ -75,8 +73,6 @@ Here's a glimpse into the Kuriftu Resort Companion app:
 
 <br>
 
-```
 👋 Contact
-
 Mussie Alemayehu - [LinkedIn](https://www.linkedin.com/in/mussie-alemayehu)
-```
+
